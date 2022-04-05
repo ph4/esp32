@@ -259,7 +259,7 @@
                 "IDF_VER=\"4.0.1\"",
                 "GCC_NOT_5_2_0",
                 "ESP_PLATFORM",
-                "PLATFORMIO=50204",
+                "PLATFORMIO=50205",
                 "ARDUINO_ESP32_DEV",
                 "CONFIG_BLINK_GPIO=2",
                 "ESP32=1",
