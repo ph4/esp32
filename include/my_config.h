@@ -8,6 +8,7 @@
 
 //#define DHT_DEBUG
 #include <DHT.h>
+#include "secrets.h"
 
 // Voltage stats
 #define VBAT_ADC1_CHANNEL ADC1_GPIO35_CHANNEL
@@ -25,14 +26,6 @@ const uint32_t LEDC_MAX = pow(2U, LEDC_RESOLUTION) - 1;
 // Dht
 #define DHT_GPIO GPIO_NUM_15
 #define DHT_TYPE DHT22
-
-// Telegram bot
-#define BOT_TOKEN "***REMOVED***"
-#define OWNER_ID "***REMOVED***"
-
-// Set password to "" for open networks.
-#define WIFI_SSID "***REMOVED***"
-#define WIFI_PASS "***REMOVED***"
 
 
 const int MAX_SEMAPHORE_WAIT_MS = 10000;
