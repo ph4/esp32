@@ -12,10 +12,12 @@
 #endif 
 #endif /* ifdef INTELLISENSE_DUMB */
 
-//#define BLYNK_TEMPLATE_ID           "TMPLAlOVHdPg"
-#define BLYNK_DEVICE_NAME           "Test Device"
-//#define BLYNK_AUTH_TOKEN            "***REMOVED***"
-#define BLYNK_AUTH_TOKEN            "***REMOVED***"
+#ifndef BLYNK_DEVICE_NAME
+	#error BLYNK_DEVICE_NAME is not set
+#endif
+#ifndef BLYNK_AUTH_TOKEN
+	#error BLYNK_AUTH_TOKEN is not set
+#endif
 
 // Comment this out to disable prints and save space
 #define BLYNK_PRINT Serial
