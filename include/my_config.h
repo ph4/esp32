@@ -11,8 +11,8 @@
 #include "secrets.h"
 
 // Voltage stats
-#define VBAT_ADC1_CHANNEL ADC1_GPIO35_CHANNEL
-#define VCC_ADC1_CHANNEL ADC1_GPIO34_CHANNEL
+#define VBAT_ADC1_CHANNEL ADC1_CHANNEL_7 // ADC1_GPIO35_CHANNEL
+#define VCC_ADC1_CHANNEL  ADC1_CHANNEL_6 // ADC1_GPIO34_CHANNEL
 #define VBAT_INTERVAL 30
 #define VCC_SAMPLES 32
 
@@ -20,7 +20,7 @@
 const uint32_t LEDC_MAX = pow(2U, LEDC_RESOLUTION) - 1;
 
 // Pins
-#define BLINK_GPIO (gpio_num_t) CONFIG_BLINK_GPIO
+#define BLINK_GPIO (gpio_num_t) 2
 #define BELL_GPIO GPIO_NUM_13
 
 // Dht

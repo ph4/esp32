@@ -413,10 +413,10 @@ void wifi_task(void *) {
     //IPAddress dns1(8,8,8,8);
     //IPAddress dns2(8,8,4,4);
     WiFi.config(ip, gw, mask, dns1, dns2);
-    WiFi.onEvent(&wifi_sta_event_cb, SYSTEM_EVENT_STA_CONNECTED);
-    WiFi.onEvent(&wifi_sta_event_cb, SYSTEM_EVENT_STA_GOT_IP);
-    WiFi.onEvent(&wifi_sta_event_cb, SYSTEM_EVENT_STA_LOST_IP);
-    WiFi.onEvent(&wifi_sta_event_cb, SYSTEM_EVENT_STA_DISCONNECTED);
+    WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_CONNECTED);
+    WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_GOT_IP);
+    WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_LOST_IP);
+    WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
     WiFi.begin(WIFI_SSID, WIFI_PASS);
     //while (WiFi.status() != WL_CONNECTED) {
     //  vTaskDelay(pdMS_TO_TICKS(100));  // TODO: add timeout and restart
@@ -445,7 +445,7 @@ void wifi_sta_event_cb(WiFiEvent_t id, WiFiEventInfo_t info) {
       break;
     case SYSTEM_EVENT_STA_GOT_IP: {
 
-      tcpip_adapter_ip_info_t ip = info.got_ip.ip_info;
+      esp_netif_ip_info_t ip = info.got_ip.ip_info;
 
       char ipaddr[INET_ADDRSTRLEN];
       inet_ntoa_r(ip.ip, ipaddr, INET_ADDRSTRLEN);
