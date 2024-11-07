@@ -12,7 +12,7 @@
 #include <esp_wifi.h>
 
 #include <Arduino.h>
-#include <analogWrite.h>
+//#include <analogWrite.h>
 #include <WiFi.h>
 
 #include <lwip/inet.h>
@@ -167,16 +167,16 @@ void bell_task(void * parent) {
     
     gpio_set_level(BLINK_GPIO, HIGH);
     if (config.ks_ticks > 0) {
-      analogWrite(BELL_GPIO, config.ks_duty, LEDC_MAX);
+      // analogWrite(BELL_GPIO, config.ks_duty, LEDC_MAX);
       vTaskDelay(config.ks_ticks);
     }
 
     if (config.ticks > 0) {
-      analogWrite(BELL_GPIO, config.duty, LEDC_MAX);
+      // analogWrite(BELL_GPIO, config.duty, LEDC_MAX);
 
       interrupted = xTaskNotifyWait(0U, ULONG_MAX, &nv, config.ticks);
     }
-    analogWrite(BELL_GPIO, 0U);
+    // analogWrite(BELL_GPIO, 0U);
 
     gpio_set_level(BLINK_GPIO, LOW);
 
@@ -310,29 +310,10 @@ void send_telemetry(void *pvParameter) {
   vTaskDelete(NULL);
 }
 
-#if !CONFIG_AUTOSTART_ARDUINO
-void arduinoTask(void *pvParameter) {
-  pinMode(LED_BUILTIN, OUTPUT);
-  while (1) {
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    delay(1000);
-  }
-}
-
-void app_main() {
-  // initialize arduino library before we start the tasks
-  initArduino();
-
-  xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5,
-              NULL);
-  xTaskCreate(&arduinoTask, "arduino_task", configMINIMAL_STACK_SIZE, NULL, 5,
-              NULL);
-}
-#else
 
 void blynk_task(void *pvParam) {
   LOGI("Blynk init");
-  Blynk.begin(BLYNK_AUTH_TOKEN, WIFI_SSID, WIFI_PASS);
+  Blynk.begin(BLYNK_AUTH_TOKEN, WIFI_SSID, WIFI_PASS, BLYNK_DOMAIN, 8080);
 
   TickType_t lastWake = xTaskGetTickCount();
   while (running) {
@@ -412,7 +393,7 @@ void wifi_task(void *) {
     IPAddress dns2(213,234,192,7);
     //IPAddress dns1(8,8,8,8);
     //IPAddress dns2(8,8,4,4);
-    WiFi.config(ip, gw, mask, dns1, dns2);
+    //WiFi.config(ip, gw, mask, dns1, dns2);
     WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_CONNECTED);
     WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_GOT_IP);
     WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_LOST_IP);
@@ -511,10 +492,17 @@ void setup() {
 
 TickType_t loop_lastWake = xTaskGetTickCount();
 
-void loop() {
+void loop(void * param) {
   // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 
   //vTaskDelayUntil(&loop_lastWake, pdMS_TO_TICKS(10000));
   vTaskSuspend( NULL );
+}
+
+#if !CONFIG_AUTOSTART_ARDUINO
+extern "C" void app_main() {
+  setup();
+  xTaskCreate(&loop, "loop", configMINIMAL_STACK_SIZE, NULL, 5,
+              NULL);
 }
 #endif

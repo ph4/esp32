@@ -1,2 +1,5 @@
 .pio
-include/secrets.h
+build
+.cache
+.clangd
+main/secrets.h
