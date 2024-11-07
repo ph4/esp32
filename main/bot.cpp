@@ -15,10 +15,8 @@ UniversalTelegramBot bot(BOT_TOKEN, bot_secured_client);
 bool (*bot_callback)(UniversalTelegramBot& bot, telegramMessage& msg);
 
 void bot_init() {
-  // bot_secured_client = WiFiClientSecure();
   bot_secured_client.setCACert(TELEGRAM_CERTIFICATE_ROOT);
-  // bot = UniversalTelegramBot;
-  bot.longPoll = 20;
+  bot.longPoll = 5;
 }
 
 void bot_task(void * pvParams) {

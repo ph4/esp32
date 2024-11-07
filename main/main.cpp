@@ -14,7 +14,6 @@
 #include <nvs.h>
 
 #include <Arduino.h>
-//#include <analogWrite.h>
 #include <WiFi.h>
 
 #include <lwip/inet.h>
@@ -331,8 +330,6 @@ void blynk_task(void *pvParam) {
     xSemaphoreGive(blynk_mutex);
 
     LOGD("} Blynk Run end");
-    //
-    // timer.run();
   }
 
   vTaskDelete(NULL);
@@ -349,10 +346,10 @@ void after_connect() {
   sntp_setservername(0, "pool.ntp.org");
   sntp_init();
 
-  // time_t rawtime = time(NULL);
-  // struct tm * timeinfo;
-  // timeinfo = localtime (&rawtime);
-  // ESP_LOGI(TAG, "Sntp started, local time: %s", asctime(timeinfo));
+  time_t rawtime = time(NULL);
+  struct tm * timeinfo;
+  timeinfo = localtime (&rawtime);
+  ESP_LOGI(TAG, "Sntp started, local time: %s", asctime(timeinfo));
 
 #define K *1024
   // clang-format off
@@ -379,7 +376,6 @@ extern void wifi_sta_event_cb(WiFiEvent_t id, WiFiEventInfo_t info);
 
 #define WIFI_MAX_RETRY 5
 volatile int wifi_retry = 0;
-//volatile bool wifi_connected = false;
 
 SemaphoreHandle_t wifi_connected_sem;
 SemaphoreHandle_t wifi_disconnected_sem;
@@ -388,22 +384,12 @@ void wifi_task(void *) {
     LOGI("Starting WiFi on: %s", WIFI_SSID);
     WiFi.mode(WIFI_STA);
     esp_wifi_set_bandwidth(WIFI_IF_STA, WIFI_BW_HT20);
-    IPAddress ip(192, 168, 1, 37);
-    IPAddress gw(192, 168, 1, 1);
-    IPAddress mask(255, 255, 255, 0);
-    IPAddress dns1(85,21,192,5);
-    IPAddress dns2(213,234,192,7);
-    //IPAddress dns1(8,8,8,8);
-    //IPAddress dns2(8,8,4,4);
-    //WiFi.config(ip, gw, mask, dns1, dns2);
+
     WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_CONNECTED);
     WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_GOT_IP);
     WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_LOST_IP);
     WiFi.onEvent(&wifi_sta_event_cb, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
     WiFi.begin(WIFI_SSID, WIFI_PASS);
-    //while (WiFi.status() != WL_CONNECTED) {
-    //  vTaskDelay(pdMS_TO_TICKS(100));  // TODO: add timeout and restart
-    //}
 
     while(wifi_retry <= WIFI_MAX_RETRY) {
       // Waiting for wifi disconnect event
@@ -444,13 +430,8 @@ void wifi_sta_event_cb(WiFiEvent_t id, WiFiEventInfo_t info) {
       after_connect();
       break;
     }
-    // case SYSTEM_EVENT_STA_LOST_IP:
-    //   ESP_LOGE(TAG, "WiFi Lost IP");
-    //   //falltrough
-    //   [[fallthrough]]
     case SYSTEM_EVENT_STA_DISCONNECTED:
       ESP_LOGW(TAG, "WiFi Disconnected");
-      //xSemaphoreTake(wifi_connected_sem, portMAX_DELAY);
       xSemaphoreGive(wifi_disconnected_sem);
       break;
     default:
@@ -459,7 +440,6 @@ void wifi_sta_event_cb(WiFiEvent_t id, WiFiEventInfo_t info) {
 }
 
 void setup() {
-  //static const char *TAG = "setup";
   Serial.begin(115200);
 
   /* Configure the IOMUX register for pad BLINK_GPIO (some pads are
@@ -473,17 +453,6 @@ void setup() {
   ESP_ERROR_CHECK(gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT));
   ESP_ERROR_CHECK(gpio_set_level(BLINK_GPIO, 0));
 
-  // gpio_pad_select_gpio(BELL_GPIO);
-  // gpio_set_direction(BELL_GPIO, GPIO_MODE_OUTPUT);
-  // gpio_set_level(BELL_GPIO, 0);
-
-  // You can also specify server:
-  // Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
-  // Blynk.begin(auth, ssid, pass, IPAddress(192,168,1,100), 8080);
-  // Setup a function to be called every second
-  // timer.setInterval(1000L, myTimerEvent);
-  // configTime(0, 0, "pool.ntp.org");
-  //
   if (blynk_mutex == NULL)
     blynk_mutex = xSemaphoreCreateMutex();
   wifi_connected_sem = xSemaphoreCreateBinary();
@@ -492,18 +461,8 @@ void setup() {
   xTaskCreate(&wifi_task,     "wifi_task",      4096, NULL, 8, NULL);
 }
 
-TickType_t loop_lastWake = xTaskGetTickCount();
-
-void loop(void * param) {
-  // digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-
-  //vTaskDelayUntil(&loop_lastWake, pdMS_TO_TICKS(10000));
-  vTaskSuspend( NULL );
-}
-
-#if !CONFIG_AUTOSTART_ARDUINO
 extern "C" void app_main() {
-  // Initialize NVS wifi needs it
+  // Initialize NVS (wifi needs it)
   esp_err_t err = nvs_flash_init();
   if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
     // NVS partition was truncated and needs to be erased
@@ -513,7 +472,4 @@ extern "C" void app_main() {
   }
   ESP_ERROR_CHECK( err );
   setup();
-  xTaskCreate(&loop, "loop", configMINIMAL_STACK_SIZE, NULL, 5,
-              NULL);
 }
-#endif
