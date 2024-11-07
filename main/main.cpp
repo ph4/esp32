@@ -10,6 +10,8 @@
 #include <esp_sntp.h>
 #include <esp_log.h>
 #include <esp_wifi.h>
+#include <nvs_flash.h>
+#include <nvs.h>
 
 #include <Arduino.h>
 //#include <analogWrite.h>
@@ -501,6 +503,15 @@ void loop(void * param) {
 
 #if !CONFIG_AUTOSTART_ARDUINO
 extern "C" void app_main() {
+  // Initialize NVS wifi needs it
+  esp_err_t err = nvs_flash_init();
+  if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    // NVS partition was truncated and needs to be erased
+    // Retry nvs_flash_init
+    ESP_ERROR_CHECK(nvs_flash_erase());
+    err = nvs_flash_init();
+  }
+  ESP_ERROR_CHECK( err );
   setup();
   xTaskCreate(&loop, "loop", configMINIMAL_STACK_SIZE, NULL, 5,
               NULL);
