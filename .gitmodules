@@ -4,3 +4,15 @@
 [submodule "components/ArduinoJson"]
 	path = components/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
+[submodule "components/Adafruit_Sensor"]
+	path = components/Adafruit_Sensor
+	url = git@github.com:ph4/Adafruit_Sensor.git
+[submodule "components/DHT-sensor-library"]
+	path = components/DHT-sensor-library
+	url = git@github.com:ph4/DHT-sensor-library.git
+[submodule "components/blynk-library"]
+	path = components/blynk-library
+	url = git@github.com:ph4/blynk-library.git
+[submodule "components/Universal-Arduino-Telegram-Bot"]
+	path = components/Universal-Arduino-Telegram-Bot
+	url = git@github.com:ph4/Universal-Arduino-Telegram-Bot.git
