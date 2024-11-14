@@ -314,7 +314,7 @@ void send_telemetry(void *pvParameter) {
 
 void blynk_task(void *pvParam) {
   LOGI("Blynk init");
-  Blynk.begin(BLYNK_AUTH_TOKEN, WIFI_SSID, WIFI_PASS, BLYNK_DOMAIN, 8080);
+  Blynk.begin(BLYNK_AUTH_TOKEN, WIFI_SSID, WIFI_PASS, BLYNK_DOMAIN, BLYNK_PORT);
 
   TickType_t lastWake = xTaskGetTickCount();
   while (running) {

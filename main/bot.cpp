@@ -16,13 +16,13 @@ bool (*bot_callback)(UniversalTelegramBot& bot, telegramMessage& msg);
 
 void bot_init() {
   bot_secured_client.setCACert(TELEGRAM_CERTIFICATE_ROOT);
-  bot.longPoll = 5;
+  bot.longPoll = 1;
 }
 
 void bot_task(void * pvParams) {
   bot_init();
   TickType_t nextWake = xTaskGetTickCount();
-  const TickType_t interval = pdMS_TO_TICKS(bot.longPoll * 1000 / 3);
+  const TickType_t interval = pdMS_TO_TICKS(bot.longPoll * 1000 + 333);
   while (1) {
     LOGD("Polling server");
     // Should throttle bot if connection is broken
