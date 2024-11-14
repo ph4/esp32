@@ -1,5 +1,2 @@
-.pio
 build
-.cache
-.clangd
 main/secrets.h
